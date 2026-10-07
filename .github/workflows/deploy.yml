@@ -89,7 +89,7 @@ jobs:
           port: ${{ secrets.FTP_PORT || '21' }}
           protocol: ${{ secrets.FTP_PROTOCOL || 'ftp' }}
           local-dir: artefato/
-          server-dir: ${{ secrets.DIRETORIO_DO_SITE || 'entrega/' }}
+          server-dir: ${{ secrets.DIRETORIO_DO_SITE || 'entrega.lumimakeup.com.br/' }}
           timeout: 120000
           log-level: standard
 
