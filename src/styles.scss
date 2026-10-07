@@ -1,0 +1,159 @@
+/* Paleta Lumi Makeup, igual à loja. Mobile primeiro: o portal roda no celular. */
+:root {
+  --color-background: #f6ece5;
+  --color-primary: #b98b73;
+  --color-primary-dark: #8b5e52;
+  --color-text: #4a332c;
+  --color-text-muted: #8a7268;
+  --color-surface: #ffffff;
+  --color-success: #7a9b76;
+  --color-warning: #d9a441;
+  --color-danger: #b3261e;
+  --color-border: rgba(185, 139, 115, 0.28);
+  --color-border-strong: rgba(185, 139, 115, 0.55);
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 18px;
+  --radius-pill: 999px;
+  --shadow-card: 0 1px 2px rgba(74, 51, 44, 0.05), 0 12px 28px rgba(74, 51, 44, 0.07);
+  --touch: 48px;
+  --font-body: 'Inter', 'Poppins', Arial, sans-serif;
+  --font-title: Georgia, 'Playfair Display', serif;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: var(--font-body);
+  background-color: var(--color-background);
+  color: var(--color-text);
+  line-height: 1.6;
+  min-height: 100vh;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-title);
+  font-weight: 600;
+}
+
+.container {
+  width: 100%;
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 1rem 1rem 3rem;
+}
+
+.text-muted {
+  color: var(--color-text-muted);
+}
+
+.pequeno {
+  font-size: 0.82rem;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  min-height: var(--touch);
+  padding: 0.7rem 1.4rem;
+  border-radius: var(--radius-pill);
+  border: 1px solid transparent;
+  background: var(--color-primary);
+  color: #fff;
+  font-weight: 500;
+  font-size: 1rem;
+  cursor: pointer;
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
+.btn-outline {
+  background: var(--color-surface);
+  border-color: var(--color-border-strong);
+  color: var(--color-primary-dark);
+}
+
+.btn-perigo {
+  background: transparent;
+  border: 1px solid var(--color-danger);
+  color: var(--color-danger);
+}
+
+.btn-bloco {
+  width: 100%;
+}
+
+.input,
+select,
+textarea {
+  width: 100%;
+  min-height: var(--touch);
+  padding: 0.7rem 1rem;
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-md);
+  background: var(--color-surface);
+  font-family: var(--font-body);
+  font-size: 1rem;
+  color: var(--color-text);
+}
+
+.card {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-card);
+}
+
+.etiqueta {
+  display: inline-block;
+  font-size: 0.72rem;
+  padding: 0.2rem 0.55rem;
+  border-radius: var(--radius-pill);
+  border: 1px solid;
+  white-space: nowrap;
+}
+
+.etiqueta.ativo {
+  color: var(--color-success);
+  border-color: var(--color-success);
+}
+
+.etiqueta.aguardando {
+  color: var(--color-warning);
+  border-color: var(--color-warning);
+}
+
+.etiqueta.inativo {
+  color: var(--color-text-muted);
+  border-color: var(--color-text-muted);
+}
+
+.alerta-erro {
+  padding: 0.6rem 0.8rem;
+  border: 1px solid var(--color-danger);
+  border-radius: var(--radius-md);
+  background: #fdecea;
+  color: #8a2f27;
+  margin-bottom: 1rem;
+}
+
+.skeleton {
+  position: relative;
+  overflow: hidden;
+  background: linear-gradient(90deg, #f0e2da 0%, #f7ece6 100%);
+  border-radius: var(--radius-sm);
+}

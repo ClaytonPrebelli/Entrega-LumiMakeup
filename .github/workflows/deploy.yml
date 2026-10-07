@@ -1,0 +1,111 @@
+name: Deploy do portal de entrega
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-do-portal-entrega
+  cancel-in-progress: false
+
+jobs:
+  compilar:
+    name: Testes e build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Obter o codigo
+        uses: actions/checkout@v4
+
+      - name: Preparar o Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - name: Instalar as dependencias
+        run: npm ci
+
+      - name: Rodar os testes
+        run: npm test -- --watch=false --browsers=ChromeHeadless
+
+      - name: Compilar
+        run: npm run build
+
+      - name: Conferir o artefato
+        run: |
+          test -f dist/entrega-lumimakeup/browser/index.html
+          test -f dist/entrega-lumimakeup/browser/web.config
+          echo "ok: $(find dist/entrega-lumimakeup/browser -type f | wc -l) arquivos"
+
+      - name: Guardar o artefato
+        uses: actions/upload-artifact@v4
+        with:
+          name: portal-entrega
+          path: dist/entrega-lumimakeup/browser
+          if-no-files-found: error
+          retention-days: 7
+
+  publicar:
+    name: Enviar para o servidor
+    needs: compilar
+    runs-on: ubuntu-latest
+    environment: producao
+    steps:
+      - name: Baixar o artefato
+        uses: actions/download-artifact@v4
+        with:
+          name: portal-entrega
+          path: artefato
+
+      - name: Conferir os segredos do FTP
+        env:
+          FTP_HOST: ${{ secrets.FTP_HOST }}
+          FTP_USERNAME: ${{ secrets.FTP_USERNAME }}
+          FTP_PASSWORD: ${{ secrets.FTP_PASSWORD }}
+        run: |
+          faltando=""
+          [ -n "$FTP_HOST" ] || faltando="$faltando FTP_HOST"
+          [ -n "$FTP_USERNAME" ] || faltando="$faltando FTP_USERNAME"
+          [ -n "$FTP_PASSWORD" ] || faltando="$faltando FTP_PASSWORD"
+          if [ -n "$faltando" ]; then
+            echo "::error::Secret nao cadastrado neste repositorio:$faltando"
+            echo "Settings -> Secrets and variables -> Actions -> aba Repository secrets."
+            echo "Nao e a aba Repository variables: la o valor chega vazio."
+            exit 1
+          fi
+          echo "ok: os tres segredos do FTP estao cadastrados"
+
+      - name: Enviar por FTP
+        uses: SamKirkland/FTP-Deploy-Action@v4.4.0
+        with:
+          server: ${{ secrets.FTP_HOST }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          port: ${{ secrets.FTP_PORT || '21' }}
+          protocol: ${{ secrets.FTP_PROTOCOL || 'ftp' }}
+          local-dir: artefato/
+          server-dir: ${{ secrets.DIRETORIO_DO_SITE || 'entrega/' }}
+          timeout: 120000
+          log-level: standard
+
+      - name: Conferir o site
+        env:
+          DOMINIO: ${{ secrets.DOMINIO_DO_SITE || 'entrega.lumimakeup.com.br' }}
+        run: |
+          for rota in /login /pedidos; do
+            codigo=$(curl --silent --output /tmp/resposta --write-out '%{http_code}' "https://$DOMINIO$rota")
+            if [ "$codigo" != "200" ]; then
+              echo "::error::$rota respondeu HTTP $codigo"
+              echo "--- inicio da resposta ---"
+              head -c 1500 /tmp/resposta
+              echo ""
+              echo "--- fim da resposta ---"
+              exit 1
+            fi
+          done
+          echo "ok: o login e a rota de pagina unica responderam 200"
