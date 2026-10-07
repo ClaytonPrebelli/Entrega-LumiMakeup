@@ -84,7 +84,7 @@ function enderecoCompleto(pedido: PedidoDto): string {
                   <div><dt>Bairro</dt><dd>{{ pedido.enderecoBairro }}</dd></div>
                 }
                 <div><dt>Distância</dt><dd>{{ pedido.distanciaKm }} km</dd></div>
-                <div><dt>Total</dt><dd>{{ pedido.total | currency: 'BRL' }}</dd></div>
+                <div><dt>Frete</dt><dd>{{ pedido.custoFrete | currency: 'BRL' }}</dd></div>
                 @if (aba() === 'entregues') {
                   <div>
                     <dt>Entregue em</dt>
